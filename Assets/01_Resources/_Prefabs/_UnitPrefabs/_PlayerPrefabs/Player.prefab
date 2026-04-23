@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7025462315627370803}
   - component: {fileID: 6748467484051324815}
   - component: {fileID: 7450235399370102017}
+  - component: {fileID: 5247440846533962018}
   - component: {fileID: 1100430144303668802}
   - component: {fileID: 581380805219672093}
   - component: {fileID: 3829378165992001487}
@@ -141,6 +142,7 @@ AudioSource:
     m_RotationOrder: 4
 --- !u!212 &6748467484051324815
 SpriteRenderer:
+  serializedVersion: 2
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -159,6 +161,8 @@ SpriteRenderer:
   m_RayTracingAccelStructBuildFlagsOverride: 0
   m_RayTracingAccelStructBuildFlags: 1
   m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -180,9 +184,11 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 3
+  m_MaskInteraction: 0
   m_Sprite: {fileID: 21300000, guid: a00fe705d046a0146abadb7668ff56bc, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -192,7 +198,6 @@ SpriteRenderer:
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
-  m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!114 &7450235399370102017
 MonoBehaviour:
@@ -228,6 +233,9 @@ MonoBehaviour:
   _soundType: 0
   _soundClip: {fileID: 0}
   _soundSource: {fileID: 0}
+  _hitSoundName: 
+  _hitSoundType: 0
+  _hitSoundClip: {fileID: 0}
   _collisionRadius: 0
   isDead: 0
   _invincibleDuration: 0.5
@@ -238,6 +246,20 @@ MonoBehaviour:
     _playerLevel: 0
   _equippedWeapons: []
   _attackStatsProvider: {fileID: 0}
+--- !u!114 &5247440846533962018
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5605012745649470038}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1eb75d8a606d2bf44973e5147798a469, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerMobileMoveController
+  _moveController: {fileID: 1100430144303668802}
+  _rotationController: {fileID: 3829378165992001487}
 --- !u!114 &1100430144303668802
 MonoBehaviour:
   m_ObjectHideFlags: 0

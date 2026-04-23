@@ -1,4 +1,5 @@
 using Sirenix.OdinInspector;
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem.XR;
 
@@ -41,9 +42,12 @@ public class AllManager : Singleton<AllManager>
     [TabGroup("Canvas")][SerializeField] private UIPoolCanvasController _uIPoolCanvasController;
     public UIPoolCanvasController UIPoolCanvas { get { return _uIPoolCanvasController; } }
 
+    [TabGroup("Camera")][SerializeField] private MobileLetterBoxController _mobileLetterBoxController;
+    public MobileLetterBoxController MobileLetterBox { get { return _mobileLetterBoxController; } }
+
     private void Start()
     {
-        Screen.SetResolution(1920, 1080, true);
+        MobileLetterBox.LetterBox();
         Application.targetFrameRate = 60;
 
         if (GamemodeManager == null) Debug.Log("GameModeContoller가 없습니다.");
@@ -71,4 +75,6 @@ public class AllManager : Singleton<AllManager>
 
         GamemodeManager.GameStart();
     }
+
+    
 }

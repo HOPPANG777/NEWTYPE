@@ -63,8 +63,8 @@ public class PlayerMoveController : MonoBehaviour, IMoveable, ISetStatus
         if (AllManager.instance.GamemodeManager.GameMode != GameModeType.GAMEMODE_INGAME) return;
 
         // 입력
-        _moveDirection.x = Input.GetAxisRaw("Horizontal");
-        _moveDirection.y = Input.GetAxisRaw("Vertical");
+        //_moveDirection.x = Input.GetAxisRaw("Horizontal");
+        //_moveDirection.y = Input.GetAxisRaw("Vertical");
 
         // 방향 벡터
         Vector3 nextVector = _moveDirection.normalized * _playerAttribute.Attributes.UnitMoveSpeed * Time.deltaTime;
