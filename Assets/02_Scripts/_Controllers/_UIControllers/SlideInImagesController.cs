@@ -37,9 +37,9 @@ public class SlideInImagesController : MonoBehaviour, IMoveable, ISetStatus
         for (int i = 0; i < n; i++) _initialPositions[i] = _images[i].GetComponent<RectTransform>().anchoredPosition;
 
         // 2) 도착 위치(endPositions)는 원래 위치와 같게 설정
-        if (n > 0) _endPositions[0] = new Vector2(640f, _initialPositions[0].y);
+        if (n > 0) _endPositions[0] = new Vector2(360f, _initialPositions[0].y);
         if (n > 1) _endPositions[1] = new Vector2(0f, _initialPositions[1].y);
-        if (n > 2) _endPositions[2] = new Vector2(-640f, _initialPositions[2].y);
+        if (n > 2) _endPositions[2] = new Vector2(-360f, _initialPositions[2].y);
     }
 
     public void SetStatus()
