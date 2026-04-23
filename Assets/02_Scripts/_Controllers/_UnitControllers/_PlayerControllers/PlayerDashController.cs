@@ -40,6 +40,7 @@ public class PlayerDashController : MonoBehaviour, IDashable, ISpeakable, ISetSt
     private Vector3 _dashDir;
     private Vector3 _dashTarget;
     private float _dashTimer;
+    private Vector3 _lastDirection;
 
     [TabGroup("Dash AfterImage")][SerializeField] private float _afterImageInterval = 0.05f;
     [TabGroup("Dash AfterImage")][SerializeField] private float _afterImageDuration = 10.0f;
@@ -97,6 +98,8 @@ public class PlayerDashController : MonoBehaviour, IDashable, ISpeakable, ISetSt
         // 쿨타임 감소
         if (_dashTimer > 0f) _dashTimer -= Time.deltaTime;
 
+        _lastDirection = PlayerDirection.MoveDirection;
+
         // 대쉬 중이면 대쉬 지속, 아니면 일반 이동 + 대쉬 시도
         if (_isDashing)
         {
@@ -108,48 +111,52 @@ public class PlayerDashController : MonoBehaviour, IDashable, ISpeakable, ISetSt
         }
     }
 
-        public void TryStartDash()
+    public void TryStartDash()
+    {
+        var unit = _player.GetComponent<UnitBase>();
+        // 쿨타임 / 모드 확인
+        if (_dashTimer > 0f) return;
+        if (AllManager.instance.GamemodeManager.GameMode != GameModeType.GAMEMODE_INGAME) return;
+
+        // 방향 체크
+        if (_lastDirection == Vector3.zero) return;
+
+        // 입력 체크
+        //if (!(Input.GetKeyDown(KeyCode.Space))) return;
+        if (!(Input.GetMouseButton(0))) return;
+
+        //SoundPlay();
+
+        // 대쉬 방향 & 목표 설정
+        _dashDir = _playerDirection.MoveDirection.normalized; // (_moveDirection - transform.position).normalized;
+        _dashTarget = this.transform.position + _dashDir * DashDistance;
+
+        _isDashing = true;
+        _dashTimer = DashCooldown;
+    }
+
+    public void ContinueDash()
+    {
+        if (AllManager.instance.GamemodeManager.GameMode != GameModeType.GAMEMODE_INGAME) return;
+
+        // 한 프레임 이동량
+        Vector3 moveStep = _dashDir * DashSpeed * Time.deltaTime;
+        Vector3 toTarget = _dashTarget - this.transform.position;
+
+        CreateAfterImage();
+
+        // 목표 넘어서면 종료
+        if (Vector3.Dot(toTarget, _dashDir) <= 0f || moveStep.sqrMagnitude >= toTarget.sqrMagnitude)
         {
-            var unit = _player.GetComponent<UnitBase>();
-            // 쿨타임 / 모드 확인
-            if (_dashTimer > 0f) return;
-            if (AllManager.instance.GamemodeManager.GameMode != GameModeType.GAMEMODE_INGAME) return;
-
-            // 입력 체크
-            if (!(Input.GetKeyDown(KeyCode.Space))) return;
-
-            //SoundPlay();
-
-            // 대쉬 방향 & 목표 설정
-            _dashDir = _playerDirection.MoveDirection.normalized; // (_moveDirection - transform.position).normalized;
-            _dashTarget = this.transform.position + _dashDir * DashDistance;
-
-            _isDashing = true;
-            _dashTimer = DashCooldown;
+            // SoundStop();
+            this.transform.position = _dashTarget;
+            _isDashing = false;
         }
-
-        public void ContinueDash()
+        else
         {
-            if (AllManager.instance.GamemodeManager.GameMode != GameModeType.GAMEMODE_INGAME) return;
-
-            // 한 프레임 이동량
-            Vector3 moveStep = _dashDir * DashSpeed * Time.deltaTime;
-            Vector3 toTarget = _dashTarget - this.transform.position;
-
-            CreateAfterImage();
-
-            // 목표 넘어서면 종료
-            if (Vector3.Dot(toTarget, _dashDir) <= 0f || moveStep.sqrMagnitude >= toTarget.sqrMagnitude)
-            {
-                // SoundStop();
-                this.transform.position = _dashTarget;
-                _isDashing = false;
-            }
-            else
-            {
-                this.transform.position += moveStep;
-            }
+            this.transform.position += moveStep;
         }
+    }
 
     public void SoundPlay()
     {

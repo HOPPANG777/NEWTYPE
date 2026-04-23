@@ -4,7 +4,8 @@ public class PlayerMobileMoveController : MonoBehaviour
 {
     [SerializeField] private PlayerMoveController _moveController;
     [SerializeField] private PlayerMouseDirectionController _rotationController;
-
+    [SerializeField] private PlayerDashController _dashController;
+ 
     private Vector2 _touchStartPos;
     private bool _isDragging = false;
 
@@ -28,6 +29,9 @@ public class PlayerMobileMoveController : MonoBehaviour
 
                 // 이동 스크립트에 방향 전달
                 _moveController.MoveDirection = new Vector3(direction.x, direction.y, 0);
+
+                // 대쉬 스크립트에 방향 전달
+                _dashController.PlayerDirection.MoveDirection = new Vector3(direction.x, direction.y, 0);
 
                 // 회전 스크립트에 방향 전달 (기존 Rotate 로직 대신 방향만 갱신)
                 _rotationController.RotationDirection = new Vector3(direction.x, direction.y, 0);

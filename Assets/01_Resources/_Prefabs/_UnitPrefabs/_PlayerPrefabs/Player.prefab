@@ -260,6 +260,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMobileMoveController
   _moveController: {fileID: 1100430144303668802}
   _rotationController: {fileID: 3829378165992001487}
+  _dashController: {fileID: 581380805219672093}
 --- !u!114 &1100430144303668802
 MonoBehaviour:
   m_ObjectHideFlags: 0

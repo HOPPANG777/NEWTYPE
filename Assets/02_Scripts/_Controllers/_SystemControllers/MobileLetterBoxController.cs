@@ -28,7 +28,7 @@ public class MobileLetterBoxController : MonoBehaviour
             rect.height = scale;
             rect.x = 0;
             rect.y = (1.0f - scale) / 2.0f;
-            camera.rect = rect;
+            camera.rect = rect; 
         }
         else
         {

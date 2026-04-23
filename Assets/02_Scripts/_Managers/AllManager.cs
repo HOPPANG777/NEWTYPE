@@ -60,7 +60,7 @@ public class AllManager : Singleton<AllManager>
         if (ParticleFactory == null) Debug.Log("ParticleFactory가 없습니다.");
         if (ItemFactory == null) Debug.Log("ItemFactory가 없습니다.");
         if (UIPoolCanvas == null) Debug.Log("UIPoolCanvasController가 없습니다.");
-
+        
         _uiController.Init();
         _collisionController.Init();
         PoolManager.instance.Init();
