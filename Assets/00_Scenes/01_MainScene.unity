@@ -4087,7 +4087,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_EffectColor: {r: 0.33962262, g: 0.33962262, b: 0.33962262, a: 1}
+  m_EffectColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
   m_EffectDistance: {x: 5, y: -5}
   m_UseGraphicAlpha: 1
 --- !u!114 &257318573
@@ -10463,7 +10463,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -1080, y: 0}
+  m_AnchoredPosition: {x: -2100, y: 0}
   m_SizeDelta: {x: 1080, y: 1920}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &797297476
@@ -10516,7 +10516,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45ae1f8428fb0654c9e3600f9466c40c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _slideDistance: 108000
+  _slideDistance: 210000
   _moveDuration: 30
   _moveDirection: {x: 0, y: 0, z: 0}
   _slideDirection: 3
@@ -10578,7 +10578,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_EffectColor: {r: 0.33962262, g: 0.33962262, b: 0.33962262, a: 1}
+  m_EffectColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
   m_EffectDistance: {x: 5, y: -5}
   m_UseGraphicAlpha: 1
 --- !u!114 &800463648
@@ -13599,10 +13599,10 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1546737403}
   - {fileID: 257318571}
   - {fileID: 800463646}
   - {fileID: 1295379778}
-  - {fileID: 1546737403}
   m_Father: {fileID: 1848874786}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -15124,7 +15124,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e19747de3f5aca642ab2be37e372fb86, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_EffectColor: {r: 0.33962262, g: 0.33962262, b: 0.33962262, a: 1}
+  m_EffectColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
   m_EffectDistance: {x: 5, y: -5}
   m_UseGraphicAlpha: 1
 --- !u!114 &1295379780
@@ -81328,7 +81328,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -1080, y: 0}
+  m_AnchoredPosition: {x: -2100, y: 0}
   m_SizeDelta: {x: 1080, y: 1920}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1494087854
@@ -81343,7 +81343,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45ae1f8428fb0654c9e3600f9466c40c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _slideDistance: 108000
+  _slideDistance: 210000
   _moveDuration: 30
   _moveDirection: {x: 0, y: 0, z: 0}
   _slideDirection: 3
@@ -150924,7 +150924,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 1080, y: 0}
+  m_AnchoredPosition: {x: 2100, y: 0}
   m_SizeDelta: {x: 1080, y: 1920}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1904819476
@@ -150939,7 +150939,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 45ae1f8428fb0654c9e3600f9466c40c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _slideDistance: 108000
+  _slideDistance: 210000
   _moveDuration: 30
   _moveDirection: {x: 0, y: 0, z: 0}
   _slideDirection: 2
