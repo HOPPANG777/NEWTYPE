@@ -48,6 +48,7 @@ public class AllManager : Singleton<AllManager>
     private void Start()
     {
         MobileLetterBox.LetterBox();
+        MobileLetterBox.CreateMaskCamera();
         Application.targetFrameRate = 60;
 
         if (GamemodeManager == null) Debug.Log("GameModeContoller가 없습니다.");
