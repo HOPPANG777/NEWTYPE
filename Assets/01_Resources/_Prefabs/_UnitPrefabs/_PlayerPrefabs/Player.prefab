@@ -290,11 +290,12 @@ MonoBehaviour:
   _player: {fileID: 5605012745649470038}
   _dashDistance: 400
   _dashSpeed: 4000
-  _dashCooldown: 100
+  _dashCooldown: 0
   _soundName: PlayerDash
   _soundType: 2
   _soundClip: {fileID: 0}
   _soundSource: {fileID: 0}
+  _lastDirection: {x: 0, y: 0, z: 0}
   _afterImageInterval: 0.01
   _afterImageDuration: 0.2
 --- !u!114 &3829378165992001487

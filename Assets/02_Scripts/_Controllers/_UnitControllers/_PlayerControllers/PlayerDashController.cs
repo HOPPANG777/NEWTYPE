@@ -40,7 +40,7 @@ public class PlayerDashController : MonoBehaviour, IDashable, ISpeakable, ISetSt
     private Vector3 _dashDir;
     private Vector3 _dashTarget;
     private float _dashTimer;
-    private Vector3 _lastDirection;
+    [TabGroup("Dash")][Tooltip("마지막 방향")][SerializeField] private Vector3 _lastDirection;
 
     [TabGroup("Dash AfterImage")][SerializeField] private float _afterImageInterval = 0.05f;
     [TabGroup("Dash AfterImage")][SerializeField] private float _afterImageDuration = 10.0f;
@@ -95,10 +95,15 @@ public class PlayerDashController : MonoBehaviour, IDashable, ISpeakable, ISetSt
         if (CheckPlayerDirection() == false) return;
         if (AllManager.instance.GamemodeManager.GameMode != GameModeType.GAMEMODE_INGAME) return;
 
+        // 현재 이동 입력이 존재할 때만 마지막 방향을 갱신
+        Vector3 currentDir = _playerDirection.MoveDirection;
+        if (currentDir.sqrMagnitude > 1e-6f)
+        {
+            _lastDirection = currentDir.normalized;
+        }
+
         // 쿨타임 감소
         if (_dashTimer > 0f) _dashTimer -= Time.deltaTime;
-
-        _lastDirection = PlayerDirection.MoveDirection;
 
         // 대쉬 중이면 대쉬 지속, 아니면 일반 이동 + 대쉬 시도
         if (_isDashing)
@@ -123,12 +128,14 @@ public class PlayerDashController : MonoBehaviour, IDashable, ISpeakable, ISetSt
 
         // 입력 체크
         //if (!(Input.GetKeyDown(KeyCode.Space))) return;
-        if (!(Input.GetMouseButton(0))) return;
+        //if (!(Input.GetMouseButton(1))) return;
+
+        if (!(Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began || Input.GetMouseButtonDown(0))) return;
 
         //SoundPlay();
 
         // 대쉬 방향 & 목표 설정
-        _dashDir = _playerDirection.MoveDirection.normalized; // (_moveDirection - transform.position).normalized;
+        _dashDir = _lastDirection.normalized; // (_moveDirection - transform.position).normalized;
         _dashTarget = this.transform.position + _dashDir * DashDistance;
 
         _isDashing = true;
