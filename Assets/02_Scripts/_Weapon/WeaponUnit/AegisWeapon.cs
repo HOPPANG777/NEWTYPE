@@ -177,4 +177,9 @@ public class AegisWeapon : WeaponBase
         _isShrinking = true;
         _shrinkTimer = 0f;
     }
+
+    public override void CoolDownReset(float cooldown)
+    {
+        _cooldownTimer = Mathf.Max(0f, cooldown);
+    }
 }

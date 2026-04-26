@@ -106,4 +106,9 @@ public class PistolWeapon : WeaponBase
             }
         }
     }
+
+    public override void CoolDownReset(float cooldown)
+    {
+        _cooldownTimer = Mathf.Max(0f, cooldown);
+    }
 }

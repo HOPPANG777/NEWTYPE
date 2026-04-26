@@ -156,4 +156,14 @@ public class SniperWeapon : WeaponBase
             this.transform.parent.position -= dir.normalized * _recoilDistance;
         }
     }
+
+    public override void CoolDownReset(float cooldown)
+    {
+        _cooldownTimer = Mathf.Max(0f, cooldown);
+        if (_pathPreview != null)
+        {
+            _pathPreview.Show();
+            _pathPreview.SetChargeProgress(0f);
+        }
+    }
 }

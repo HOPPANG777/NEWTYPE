@@ -140,6 +140,8 @@ public class PlayerDashController : MonoBehaviour, IDashable, ISpeakable, ISetSt
 
         _isDashing = true;
         _dashTimer = DashCooldown;
+
+        ResetEquippedWeaponCooldowns();
     }
 
     public void ContinueDash()
@@ -186,5 +188,22 @@ public class PlayerDashController : MonoBehaviour, IDashable, ISpeakable, ISetSt
         var dashEffect = AllManager.instance.ParticleFactory.Create(ParticleType.PARTICLE_DASH, this.transform.position, Quaternion.identity);
         var after = dashEffect.GetComponent<DashAfterImage>();
         after.Initialize(_playerRenderer.sprite, _playerRenderer.color, _playerRenderer.sortingOrder - 1, _afterImageDuration, this.gameObject.GetComponent<SpriteRenderer>().size, this.transform.rotation);
+    }
+
+    private void ResetEquippedWeaponCooldowns()
+    {
+        if (_player == null) return;
+        var playerUnit = _player.GetComponent<PlayerUnit>();
+        if (playerUnit == null) return;
+
+        var weapons = playerUnit.EquippedWeapons;
+        if (weapons == null) return;
+
+        for (int i = 0; i < weapons.Count; i++)
+        {
+            var weapon = weapons[i];
+            if (weapon == null) continue;
+            weapon.CoolDownReset();
+        }
     }
 }

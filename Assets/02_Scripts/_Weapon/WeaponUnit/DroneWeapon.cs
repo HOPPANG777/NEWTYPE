@@ -143,4 +143,9 @@ public class DroneWeapon : WeaponBase
         float y = Mathf.Sin(ang) * radius + center.y;
         return new Vector3(x, y, 0f);
     }
+
+    public override void CoolDownReset(float cooldown)
+    {
+        _cooldownTimer = Mathf.Max(0f, cooldown);
+    }
 }

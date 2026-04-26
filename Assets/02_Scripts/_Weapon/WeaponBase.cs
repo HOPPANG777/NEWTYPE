@@ -148,4 +148,14 @@ public class WeaponBase : MonoBehaviour, ITeamMember, ISpeakable, ISetStatus, IC
         gameObject.SetActive(false);
     }
 
+    public void CoolDownReset()
+    {
+        CoolDownReset(0f);
+    }
+
+    public virtual void CoolDownReset(float cooldown)
+    {
+        
+    }
+
 }

@@ -108,4 +108,9 @@ public class EnergyShildWeapon : WeaponBase
         ReleaseProjectile();
         base.Dead();
     }
+
+    public override void CoolDownReset(float cooldown)
+    {
+        _cooldownTimer = Mathf.Max(0f, cooldown);
+    }
 }
