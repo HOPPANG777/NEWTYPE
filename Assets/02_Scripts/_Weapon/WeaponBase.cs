@@ -153,9 +153,14 @@ public class WeaponBase : MonoBehaviour, ITeamMember, ISpeakable, ISetStatus, IC
     {
         Transform owner = transform.parent != null ? transform.parent : transform;
         var dirCtrl = owner.GetComponent<PlayerMouseDirectionController>();
-        if (dirCtrl != null && dirCtrl.RotationDirection.sqrMagnitude > 1e-6f)
+        if (dirCtrl != null)
         {
-            return dirCtrl.RotationDirection.normalized;
+            // 최신 바라보는 방향을 보장
+            dirCtrl.Rotate();
+            if (dirCtrl.RotationDirection.sqrMagnitude > 1e-6f)
+            {
+                return dirCtrl.RotationDirection.normalized;
+            }
         }
 
         Vector3 right = owner.right;
@@ -166,24 +171,16 @@ public class WeaponBase : MonoBehaviour, ITeamMember, ISpeakable, ISetStatus, IC
     protected bool TryGetAimDirectionInCone(float range, float halfAngleDeg, Vector3 origin, Vector3 facingDir, out Vector3 aimDir)
     {
         aimDir = Vector3.zero;
-        if (TryFindClosestEnemyInCone(range, halfAngleDeg, origin, facingDir, out var target) && target != null)
+        if (!TryFindClosestEnemyInCone(range, halfAngleDeg, origin, facingDir, out var target) || target == null)
         {
-            Vector3 delta = target.transform.position - origin;
-            if (delta.sqrMagnitude > 1e-6f)
-            {
-                aimDir = delta.normalized;
-                return true;
-            }
-        }
-
-        if (facingDir.sqrMagnitude > 1e-6f)
-        {
-            aimDir = facingDir.normalized;
             return false;
         }
 
-        aimDir = Vector3.right;
-        return false;
+        Vector3 delta = target.transform.position - origin;
+        if (delta.sqrMagnitude <= 1e-6f) return false;
+
+        aimDir = delta.normalized;
+        return true;
     }
 
     protected bool TryFindClosestEnemyInCone(float range, float halfAngleDeg, Vector3 origin, Vector3 facingDir, out UnitBase target)

@@ -36,31 +36,42 @@ public class MissileWeapon : WeaponBase
         if (_stats == null) return;
         _stats.SetTargetWeapon(this);
 
+        float cooldown = _stats.GetAttackCooldown(this);
+
         if (_cooldownTimer > 0f)
         {
             _cooldownTimer += Time.deltaTime;
-            if (_stats != null && _cooldownTimer >= _stats.GetAttackCooldown(this))
+            if (_cooldownTimer >= cooldown)
             {
-                _cooldownTimer = 0f;
-                Shoot();
+                if (TryShoot())
+                {
+                    _cooldownTimer = 0f;
+                }
+                else
+                {
+                    _cooldownTimer = cooldown;
+                }
             }
         }
         else
         {
-            Shoot();
-            _cooldownTimer += Time.deltaTime;
+            if (TryShoot())
+            {
+                _cooldownTimer += Time.deltaTime;
+            }
         }
     }
 
-    // 미사일 투사체를 실제로 생성하여 발사한다
-    public override void Shoot()
+    private bool TryShoot()
     {
-        base.Shoot();
-        if (_projectileData == null || _stats == null) return;
+        if (_projectileData == null || _stats == null) return false;
 
         float range = _stats.GetAttackRange(this);
         Vector3 facing = GetOwnerFacingDirection();
-        TryGetAimDirectionInCone(range, DefaultTargetConeHalfAngleDeg, transform.position, facing, out Vector3 aimDir);
+        if (!TryGetAimDirectionInCone(range, DefaultTargetConeHalfAngleDeg, transform.position, facing, out Vector3 aimDir))
+        {
+            return false;
+        }
 
         int count = _stats.GetProjectileCount(this);
         for (int i = 0; i < count; i++)
@@ -75,6 +86,15 @@ public class MissileWeapon : WeaponBase
                 Debug.LogError("Failed to create MissileWeaponProjectile. Check if the prefab is set correctly in ProjectileFactory.");
             }
         }
+
+        return true;
+    }
+
+    // 미사일 투사체를 실제로 생성하여 발사한다
+    public override void Shoot()
+    {
+        base.Shoot();
+        TryShoot();
     }
 
     public override void CoolDownReset(float cooldown)

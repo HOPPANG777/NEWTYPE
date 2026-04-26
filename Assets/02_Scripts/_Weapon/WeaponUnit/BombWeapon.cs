@@ -39,21 +39,29 @@ public class BombWeapon : WeaponBase
         if (_stats == null) return;
         _stats.SetTargetWeapon(this);
 
+        float cooldown = _stats.GetAttackCooldown(this);
+
         if (_cooldownTimer > 0f)
         {
-            // 쿨타임 경과 여부 확인
             _cooldownTimer += Time.deltaTime;
-            if (_stats != null && _cooldownTimer >= _stats.GetAttackCooldown(this))
+            if (_cooldownTimer >= cooldown)
             {
-                _cooldownTimer = 0f;
-                Shoot();
+                if (TryShoot())
+                {
+                    _cooldownTimer = 0f;
+                }
+                else
+                {
+                    _cooldownTimer = cooldown;
+                }
             }
         }
         else
         {
-            // 첫 발사는 바로 실행
-            Shoot();
-            _cooldownTimer += Time.deltaTime;
+            if (TryShoot())
+            {
+                _cooldownTimer += Time.deltaTime;
+            }
         }
     }
 
@@ -61,19 +69,26 @@ public class BombWeapon : WeaponBase
     public override void Shoot()
     {
         base.Shoot();
-        if (_projectileData == null || _stats == null) return;
+        TryShoot();
+    }
+
+    private bool TryShoot()
+    {
+        if (_projectileData == null || _stats == null) return false;
 
         float range = _stats.GetAttackRange(this);
         Vector3 facing = GetOwnerFacingDirection();
-        TryGetAimDirectionInCone(range, DefaultTargetConeHalfAngleDeg, transform.position, facing, out Vector3 aimDir);
+        if (!TryGetAimDirectionInCone(range, DefaultTargetConeHalfAngleDeg, transform.position, facing, out Vector3 aimDir))
+        {
+            return false;
+        }
 
         int count = _stats.GetProjectileCount(this);
         for (int i = 0; i < count; i++)
         {
-            var proj = AllManager.instance.ProjectileFactory.Create( _projectileData, transform.position, Quaternion.identity, this) as BombWeaponProjectile;
+            var proj = AllManager.instance.ProjectileFactory.Create(_projectileData, transform.position, Quaternion.identity, this) as BombWeaponProjectile;
             if (proj != null)
             {
-                // 베지어 곡선의 네 지점을 계산하여 초기화
                 Vector3 p1 = transform.position;
                 Vector3 p2 = p1 + new Vector3(0f, 5f, 0f);
 
@@ -91,6 +106,8 @@ public class BombWeapon : WeaponBase
                 Debug.LogError("Failed to create BombWeaponProjectile. Check if the prefab is set correctly in ProjectileFactory.");
             }
         }
+
+        return true;
     }
 
     public override void CoolDownReset(float cooldown)

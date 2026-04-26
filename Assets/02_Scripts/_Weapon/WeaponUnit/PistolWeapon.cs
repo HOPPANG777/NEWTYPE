@@ -53,42 +53,49 @@ public class PistolWeapon : WeaponBase
         if (_stats == null) return; 
         _stats.SetTargetWeapon(this);
 
+        float cooldown = _stats.GetAttackCooldown(this);
+
         if (_cooldownTimer > 0f)
         {
             _cooldownTimer += Time.deltaTime;
-            if (_stats != null && _cooldownTimer >= _stats.GetAttackCooldown(this))
+            if (_cooldownTimer >= cooldown)
             {
-                _cooldownTimer = 0f;
-                Shoot();
+                // 쿨다운이 찼으면 "발사 성공 시"에만 쿨다운을 소모한다
+                if (TryShoot())
+                {
+                    _cooldownTimer = 0f;
+                }
+                else
+                {
+                    _cooldownTimer = cooldown; // 계속 대기(ready 상태 유지)
+                }
             }
         }
         else
         {
-            // 첫 발사는 즉시 수행
-            Shoot();
-            _cooldownTimer += Time.deltaTime;
+            // 첫 발사는 "타겟이 있을 때만" 수행
+            if (TryShoot())
+            {
+                _cooldownTimer += Time.deltaTime;
+            }
         }
     }
 
-    //---------------------------------------------------------------------------
-    // 투사체 발사
-    //---------------------------------------------------------------------------
-    public override void Shoot()
+    private bool TryShoot()
     {
-        base.Shoot();
-        if (_projectileData == null || _stats == null)
-            return;
-
-        int count = _stats.GetProjectileCount(this);
+        if (_projectileData == null || _stats == null) return false;
 
         float range = _stats.GetAttackRange(this);
         Vector3 facing = GetOwnerFacingDirection();
-        TryGetAimDirectionInCone(range, DefaultTargetConeHalfAngleDeg, transform.position, facing, out Vector3 dir);
+        if (!TryGetAimDirectionInCone(range, DefaultTargetConeHalfAngleDeg, transform.position, facing, out Vector3 dir))
+        {
+            return false;
+        }
 
+        int count = _stats.GetProjectileCount(this);
         for (int i = 0; i < count; i++)
         {
-            var proj = AllManager.instance.ProjectileFactory.Create( _projectileData, transform.position, Quaternion.identity, this) as PistolWeaponProjectile;
-
+            var proj = AllManager.instance.ProjectileFactory.Create(_projectileData, transform.position, Quaternion.identity, this) as PistolWeaponProjectile;
             if (proj != null)
             {
                 proj.Initialize(dir, _stats);
@@ -98,6 +105,17 @@ public class PistolWeapon : WeaponBase
                 Debug.LogError("Failed to create PistolWeaponProjectile. Check if the prefab is set correctly in ProjectileFactory.");
             }
         }
+
+        return true;
+    }
+
+    //---------------------------------------------------------------------------
+    // 투사체 발사
+    //---------------------------------------------------------------------------
+    public override void Shoot()
+    {
+        base.Shoot();
+        TryShoot();
     }
 
     public override void CoolDownReset(float cooldown)

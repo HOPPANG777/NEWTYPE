@@ -37,33 +37,44 @@ public class LaserWeapon : WeaponBase
         if (_stats == null) return;
         _stats.SetTargetWeapon(this);
 
+        float cooldown = _stats.GetAttackCooldown(this);
+
         if (_cooldownTimer > 0f)
         {
             _cooldownTimer += Time.deltaTime;
-            if (_stats != null && _cooldownTimer >= _stats.GetAttackCooldown(this))
+            if (_cooldownTimer >= cooldown)
             {
-                _cooldownTimer = 0f;
-                Shoot();
+                if (TryShoot())
+                {
+                    _cooldownTimer = 0f;
+                }
+                else
+                {
+                    _cooldownTimer = cooldown;
+                }
             }
         }
         else
         {
-            // 첫 발사는 즉시 수행
-            Shoot();
-            _cooldownTimer += Time.deltaTime;
+            if (TryShoot())
+            {
+                _cooldownTimer += Time.deltaTime;
+            }
         }
     }
 
-    // 레이저 투사체를 발사한다
-    public override void Shoot()
+    private bool TryShoot()
     {
-        base.Shoot();
-        if (_projectileData == null || _stats == null) return;
+        if (_projectileData == null || _stats == null) return false;
 
-        int count = _stats.GetProjectileCount(this);
         float range = _stats.GetAttackRange(this);
         Vector3 facing = GetOwnerFacingDirection();
-        TryGetAimDirectionInCone(range, DefaultTargetConeHalfAngleDeg, transform.position, facing, out Vector3 aimDir);
+        if (!TryGetAimDirectionInCone(range, DefaultTargetConeHalfAngleDeg, transform.position, facing, out Vector3 aimDir))
+        {
+            return false;
+        }
+
+        int count = _stats.GetProjectileCount(this);
         for (int i = 0; i < count; i++)
         {
             var proj = AllManager.instance.ProjectileFactory.Create(_projectileData, transform.position, Quaternion.identity, this) as LaserWeaponProjectile;
@@ -76,6 +87,15 @@ public class LaserWeapon : WeaponBase
                 Debug.LogError("Failed to create LaserWeaponProjectile. Check if the prefab is set correctly in ProjectileFactory.");
             }
         }
+
+        return true;
+    }
+
+    // 레이저 투사체를 발사한다
+    public override void Shoot()
+    {
+        base.Shoot();
+        TryShoot();
     }
 
     public override void CoolDownReset(float cooldown)

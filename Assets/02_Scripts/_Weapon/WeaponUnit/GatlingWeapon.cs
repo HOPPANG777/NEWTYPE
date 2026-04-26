@@ -65,40 +65,46 @@ public class GatlingWeapon : WeaponBase
         if (_stats == null) return;
         _stats.SetTargetWeapon(this);
 
+        float cooldown = _stats.GetAttackCooldown(this);
+
         if (_cooldownTimer > 0f)
         {
             _cooldownTimer += Time.deltaTime;
-            if (_stats != null && _cooldownTimer >= _stats.GetAttackCooldown(this))
+            if (_cooldownTimer >= cooldown)
             {
-                _cooldownTimer = 0f;
-                Shoot();
+                if (TryShoot())
+                {
+                    _cooldownTimer = 0f;
+                }
+                else
+                {
+                    _cooldownTimer = cooldown;
+                }
             }
         }
         else
         {
-            // 첫 발사는 바로 실행한다
-            Shoot();
-            _cooldownTimer += Time.deltaTime;
+            if (TryShoot())
+            {
+                _cooldownTimer += Time.deltaTime;
+            }
         }
     }
 
-    //--------------------------------------------------------------------------
-    // 실제 발사 로직
-    //--------------------------------------------------------------------------
-    public override void Shoot()
+    private bool TryShoot()
     {
-        base.Shoot();
-        if (_projectileData == null || _stats == null) return;
-
-        int count = _stats.GetProjectileCount(this);
+        if (_projectileData == null || _stats == null) return false;
 
         float range = _stats.GetAttackRange(this);
         Vector3 facing = GetOwnerFacingDirection();
-        TryGetAimDirectionInCone(range, DefaultTargetConeHalfAngleDeg, transform.position, facing, out Vector3 baseDir);
+        if (!TryGetAimDirectionInCone(range, DefaultTargetConeHalfAngleDeg, transform.position, facing, out Vector3 baseDir))
+        {
+            return false;
+        }
 
+        int count = _stats.GetProjectileCount(this);
         for (int i = 0; i < count; i++)
         {
-            // 퍼짐 각도 범위 내에서 무작위 편차를 구한다
             float half = _spreadAngle * 0.5f;
             float randAngle = Random.Range(-half, half);
             Vector3 dir = Quaternion.Euler(0f, 0f, randAngle) * baseDir;
@@ -113,6 +119,17 @@ public class GatlingWeapon : WeaponBase
                 Debug.LogError("Failed to create GatlingWeaponProjectile. Check if the prefab is set correctly in ProjectileFactory.");
             }
         }
+
+        return true;
+    }
+
+    //--------------------------------------------------------------------------
+    // 실제 발사 로직
+    //--------------------------------------------------------------------------
+    public override void Shoot()
+    {
+        base.Shoot();
+        TryShoot();
     }
 
     public override void CoolDownReset(float cooldown)

@@ -61,20 +61,29 @@ public class DroneWeapon : WeaponBase
 
         RotateAroundPlayer();
 
+        float cooldown = _stats.GetAttackCooldown(this);
+
         if (_cooldownTimer > 0f)
         {
             _cooldownTimer += Time.deltaTime;
-            if (_cooldownTimer >= _stats.GetAttackCooldown(this))
+            if (_cooldownTimer >= cooldown)
             {
-                _cooldownTimer = 0f;
-                Shoot();
+                if (TryShoot())
+                {
+                    _cooldownTimer = 0f;
+                }
+                else
+                {
+                    _cooldownTimer = cooldown;
+                }
             }
         }
         else
         {
-            // 첫 발사는 즉시 시행
-            Shoot();
-            _cooldownTimer += Time.deltaTime;
+            if (TryShoot())
+            {
+                _cooldownTimer += Time.deltaTime;
+            }
         }
     }
 
@@ -98,14 +107,21 @@ public class DroneWeapon : WeaponBase
     public override void Shoot()
     {
         base.Shoot();
+        TryShoot();
+    }
 
-        if (_projectileData == null || _stats == null) return;
+    private bool TryShoot()
+    {
+        if (_projectileData == null || _stats == null) return false;
 
-        int count = _stats.GetProjectileCount(this);
         float range = _stats.GetAttackRange(this);
         Vector3 facing = GetOwnerFacingDirection();
-        TryGetAimDirectionInCone(range, DefaultTargetConeHalfAngleDeg, transform.position, facing, out Vector3 aimDir);
+        if (!TryGetAimDirectionInCone(range, DefaultTargetConeHalfAngleDeg, transform.position, facing, out Vector3 aimDir))
+        {
+            return false;
+        }
 
+        int count = _stats.GetProjectileCount(this);
         for (int i = 0; i < count; i++)
         {
             var proj = AllManager.instance.ProjectileFactory.Create
@@ -118,7 +134,6 @@ public class DroneWeapon : WeaponBase
 
             if (proj != null)
             {
-                Vector3 center = this.transform.parent != null ? this.transform.parent.position : Vector3.zero;
                 Vector3 start = this.transform.position;
                 Vector3 end = start + aimDir * range;
 
@@ -132,6 +147,8 @@ public class DroneWeapon : WeaponBase
                 Debug.LogError("Failed to create DroneWeaponProjectile. Check prefab setting.");
             }
         }
+
+        return true;
     }
 
     //--------------------------------------------------------------------------

@@ -110,9 +110,16 @@ public class SniperWeapon : WeaponBase
 
         if (_cooldownTimer >= cooldown)
         {
-            _cooldownTimer = 0f;
-            if (_pathPreview != null) _pathPreview.Hide();
-            Shoot();
+            if (TryShoot())
+            {
+                _cooldownTimer = 0f;
+                if (_pathPreview != null) _pathPreview.Hide();
+            }
+            else
+            {
+                // 타겟이 없으면 쿨다운은 "찬 상태"로 유지하고 대기한다
+                _cooldownTimer = cooldown;
+            }
         }
     }
 
@@ -122,14 +129,21 @@ public class SniperWeapon : WeaponBase
     public override void Shoot()
     {
         base.Shoot();
-        if (_projectileData == null || _stats == null) return;
+        TryShoot();
+    }
 
-        int count = _stats.GetProjectileCount(this);
+    private bool TryShoot()
+    {
+        if (_projectileData == null || _stats == null) return false;
 
         float range = _stats.GetAttackRange(this);
         Vector3 facing = GetOwnerFacingDirection();
-        TryGetAimDirectionInCone(range, DefaultTargetConeHalfAngleDeg, transform.position, facing, out Vector3 dir);
+        if (!TryGetAimDirectionInCone(range, DefaultTargetConeHalfAngleDeg, transform.position, facing, out Vector3 dir))
+        {
+            return false;
+        }
 
+        int count = _stats.GetProjectileCount(this);
         for (int i = 0; i < count; i++)
         {
             var proj = AllManager.instance.ProjectileFactory.Create(_projectileData, this.transform.position, Quaternion.identity, this) as SniperWeaponProjectile;
@@ -143,20 +157,21 @@ public class SniperWeapon : WeaponBase
             }
         }
 
-        // 발사 후 반동으로 플레이어를 뒤로 이동시킴
         if (this.transform.parent != null)
         {
             this.transform.parent.position -= dir.normalized * _recoilDistance;
         }
+
+        return true;
     }
 
     public override void CoolDownReset(float cooldown)
     {
-        _cooldownTimer = Mathf.Max(0f, cooldown);
-        if (_pathPreview != null)
-        {
-            _pathPreview.Show();
-            _pathPreview.SetChargeProgress(0f);
-        }
+        // 스나이퍼는 "게이지가 다 찼을 때만 발사" 구조라서,
+        // 리셋 시 즉시 발사 가능 상태로 만들어준다.
+        float ready = _stats != null ? _stats.GetAttackCooldown(this) : 0f;
+        _cooldownTimer = Mathf.Max(ready, cooldown);
+
+        if (_pathPreview != null) _pathPreview.Hide();
     }
 }
