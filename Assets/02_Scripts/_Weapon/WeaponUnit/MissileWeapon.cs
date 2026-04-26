@@ -58,14 +58,18 @@ public class MissileWeapon : WeaponBase
         base.Shoot();
         if (_projectileData == null || _stats == null) return;
 
+        float range = _stats.GetAttackRange(this);
+        Vector3 facing = GetOwnerFacingDirection();
+        TryFindClosestEnemyInCone(range, 60f, transform.position, facing, out var target);
+        Vector3 aimDir = target != null ? (target.transform.position - transform.position).normalized : facing;
+
         int count = _stats.GetProjectileCount(this);
         for (int i = 0; i < count; i++)
         {
             var proj = AllManager.instance.ProjectileFactory.Create(_projectileData, transform.position, Quaternion.identity, this) as MissileWeaponProjectile;
             if (proj != null)
             {
-                Vector3 dir = new Vector3(Random.Range(-1f, 1f), Random.Range(-1f, 1f), 0f);
-                proj.Initialize(dir, _stats);
+                proj.Initialize(aimDir, _stats);
             }
             else
             {

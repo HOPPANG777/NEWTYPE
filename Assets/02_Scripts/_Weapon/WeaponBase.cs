@@ -148,6 +148,58 @@ public class WeaponBase : MonoBehaviour, ITeamMember, ISpeakable, ISetStatus, IC
         gameObject.SetActive(false);
     }
 
+    protected Vector3 GetOwnerFacingDirection()
+    {
+        Transform owner = transform.parent != null ? transform.parent : transform;
+        var dirCtrl = owner.GetComponent<PlayerMouseDirectionController>();
+        if (dirCtrl != null && dirCtrl.RotationDirection.sqrMagnitude > 1e-6f)
+        {
+            return dirCtrl.RotationDirection.normalized;
+        }
+
+        Vector3 right = owner.right;
+        if (right.sqrMagnitude > 1e-6f) return right.normalized;
+        return Vector3.right;
+    }
+
+    protected bool TryFindClosestEnemyInCone(float range, float halfAngleDeg, Vector3 origin, Vector3 facingDir, out UnitBase target)
+    {
+        target = null;
+
+        if (facingDir.sqrMagnitude <= 1e-6f) return false;
+
+        float sqrRange = range * range;
+        Vector3 forward = facingDir.normalized;
+        float cosThreshold = Mathf.Cos(Mathf.Deg2Rad * Mathf.Clamp(halfAngleDeg, 0f, 180f));
+
+        float bestSqr = float.MaxValue;
+        List<ICollidable> list = AllManager.instance.CollisionManager.GetAllCollidables();
+        int count = list.Count;
+        for (int i = 0; i < count; i++)
+        {
+            if (list[i] is not UnitBase unit) continue;
+            if (unit is PlayerUnit || unit is ContainerUnit) continue;
+            if (unit.IsDead) continue;
+
+            Vector3 delta = unit.transform.position - origin;
+            float sqr = delta.sqrMagnitude;
+            if (sqr > sqrRange) continue;
+
+            float invMag = 1f / Mathf.Sqrt(Mathf.Max(sqr, 1e-6f));
+            Vector3 to = delta * invMag;
+            float dot = Vector3.Dot(forward, to);
+            if (dot < cosThreshold) continue;
+
+            if (sqr < bestSqr)
+            {
+                bestSqr = sqr;
+                target = unit;
+            }
+        }
+
+        return target != null;
+    }
+
     public void CoolDownReset()
     {
         CoolDownReset(0f);
