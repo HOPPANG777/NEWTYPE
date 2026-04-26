@@ -60,8 +60,7 @@ public class MissileWeapon : WeaponBase
 
         float range = _stats.GetAttackRange(this);
         Vector3 facing = GetOwnerFacingDirection();
-        TryFindClosestEnemyInCone(range, 60f, transform.position, facing, out var target);
-        Vector3 aimDir = target != null ? (target.transform.position - transform.position).normalized : facing;
+        TryGetAimDirectionInCone(range, DefaultTargetConeHalfAngleDeg, transform.position, facing, out Vector3 aimDir);
 
         int count = _stats.GetProjectileCount(this);
         for (int i = 0; i < count; i++)

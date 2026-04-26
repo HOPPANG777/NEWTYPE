@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class WeaponBase : MonoBehaviour, ITeamMember, ISpeakable, ISetStatus, ICollidable, IDead, IWeaponAttribute<WeaponAttribute>, IWeaponDisableMember, IWeaponLevel, IWeaponAttackFunction, IWeaponMember
 {
+    protected const float DefaultTargetConeHalfAngleDeg = 60f; // 120도
     [TabGroup("Weapon Base")][Tooltip("Weapon Data")][SerializeField] protected WeaponBaseSO _weaponBaseData;
     public WeaponBaseSO WeaponBaseData { get { return _weaponBaseData; } set { _weaponBaseData = value; } }
 
@@ -160,6 +161,29 @@ public class WeaponBase : MonoBehaviour, ITeamMember, ISpeakable, ISetStatus, IC
         Vector3 right = owner.right;
         if (right.sqrMagnitude > 1e-6f) return right.normalized;
         return Vector3.right;
+    }
+
+    protected bool TryGetAimDirectionInCone(float range, float halfAngleDeg, Vector3 origin, Vector3 facingDir, out Vector3 aimDir)
+    {
+        aimDir = Vector3.zero;
+        if (TryFindClosestEnemyInCone(range, halfAngleDeg, origin, facingDir, out var target) && target != null)
+        {
+            Vector3 delta = target.transform.position - origin;
+            if (delta.sqrMagnitude > 1e-6f)
+            {
+                aimDir = delta.normalized;
+                return true;
+            }
+        }
+
+        if (facingDir.sqrMagnitude > 1e-6f)
+        {
+            aimDir = facingDir.normalized;
+            return false;
+        }
+
+        aimDir = Vector3.right;
+        return false;
     }
 
     protected bool TryFindClosestEnemyInCone(float range, float halfAngleDeg, Vector3 origin, Vector3 facingDir, out UnitBase target)

@@ -63,6 +63,10 @@ public class BombWeapon : WeaponBase
         base.Shoot();
         if (_projectileData == null || _stats == null) return;
 
+        float range = _stats.GetAttackRange(this);
+        Vector3 facing = GetOwnerFacingDirection();
+        TryGetAimDirectionInCone(range, DefaultTargetConeHalfAngleDeg, transform.position, facing, out Vector3 aimDir);
+
         int count = _stats.GetProjectileCount(this);
         for (int i = 0; i < count; i++)
         {
@@ -73,11 +77,12 @@ public class BombWeapon : WeaponBase
                 Vector3 p1 = transform.position;
                 Vector3 p2 = p1 + new Vector3(0f, 5f, 0f);
 
-                float x1 = UnityEngine.Random.Range(1f, 5f);
-                if (_leftRightToggle) x1 = -x1;
+                Vector3 perp = new Vector3(-aimDir.y, aimDir.x, 0f);
+                float side = UnityEngine.Random.Range(1f, 5f);
+                if (_leftRightToggle) side = -side;
 
-                Vector3 p3 = p2 + new Vector3(x1, 0f, 0f);
-                Vector3 p4 = p1 + new Vector3(x1, -10f, 0f);
+                Vector3 p3 = p2 + perp * side;
+                Vector3 p4 = p1 + aimDir.normalized * 10f + perp * side;
                 proj.Initialize(p1, p2, p3, p4);
                 _leftRightToggle = !_leftRightToggle;
             }

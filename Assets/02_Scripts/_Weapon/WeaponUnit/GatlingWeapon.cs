@@ -92,16 +92,9 @@ public class GatlingWeapon : WeaponBase
 
         int count = _stats.GetProjectileCount(this);
 
-        // 기본 발사 방향을 구한다. 컨트롤러가 없으면 자신의 우측 방향을 사용
-        Vector3 baseDir = transform.right;
-        if (_directionCtrl != null)
-        {
-            _directionCtrl.Rotate();
-            if (_directionCtrl.RotationDirection.sqrMagnitude > 0f)
-            {
-                baseDir = _directionCtrl.RotationDirection;
-            }
-        }
+        float range = _stats.GetAttackRange(this);
+        Vector3 facing = GetOwnerFacingDirection();
+        TryGetAimDirectionInCone(range, DefaultTargetConeHalfAngleDeg, transform.position, facing, out Vector3 baseDir);
 
         for (int i = 0; i < count; i++)
         {

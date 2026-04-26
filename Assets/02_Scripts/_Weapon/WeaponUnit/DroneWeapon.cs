@@ -103,6 +103,8 @@ public class DroneWeapon : WeaponBase
 
         int count = _stats.GetProjectileCount(this);
         float range = _stats.GetAttackRange(this);
+        Vector3 facing = GetOwnerFacingDirection();
+        TryGetAimDirectionInCone(range, DefaultTargetConeHalfAngleDeg, transform.position, facing, out Vector3 aimDir);
 
         for (int i = 0; i < count; i++)
         {
@@ -118,8 +120,7 @@ public class DroneWeapon : WeaponBase
             {
                 Vector3 center = this.transform.parent != null ? this.transform.parent.position : Vector3.zero;
                 Vector3 start = this.transform.position;
-                Vector3 endDir = (start - center).normalized;
-                Vector3 end = center + endDir * range;
+                Vector3 end = start + aimDir * range;
 
                 Vector3 p2 = RandomPointAround(start, range * 0.5f);
                 Vector3 p3 = RandomPointAround(end, range * 0.5f);

@@ -81,16 +81,9 @@ public class PistolWeapon : WeaponBase
 
         int count = _stats.GetProjectileCount(this);
 
-        // 현재 바라보는 방향을 구한다. 컨트롤러가 없으면 자신의 Right 방향 사용
-        Vector3 dir = transform.right;
-        if (_directionCtrl != null)
-        {
-            _directionCtrl.Rotate();  // 방향 갱신
-            if (_directionCtrl.RotationDirection.sqrMagnitude > 0f)
-            {
-                dir = _directionCtrl.RotationDirection;
-            }
-        }
+        float range = _stats.GetAttackRange(this);
+        Vector3 facing = GetOwnerFacingDirection();
+        TryGetAimDirectionInCone(range, DefaultTargetConeHalfAngleDeg, transform.position, facing, out Vector3 dir);
 
         for (int i = 0; i < count; i++)
         {

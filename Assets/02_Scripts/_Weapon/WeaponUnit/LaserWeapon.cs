@@ -63,8 +63,7 @@ public class LaserWeapon : WeaponBase
         int count = _stats.GetProjectileCount(this);
         float range = _stats.GetAttackRange(this);
         Vector3 facing = GetOwnerFacingDirection();
-        TryFindClosestEnemyInCone(range, 60f, transform.position, facing, out var target);
-        Vector3 aimDir = target != null ? (target.transform.position - transform.position).normalized : facing;
+        TryGetAimDirectionInCone(range, DefaultTargetConeHalfAngleDeg, transform.position, facing, out Vector3 aimDir);
         for (int i = 0; i < count; i++)
         {
             var proj = AllManager.instance.ProjectileFactory.Create(_projectileData, transform.position, Quaternion.identity, this) as LaserWeaponProjectile;
